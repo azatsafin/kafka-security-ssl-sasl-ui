@@ -19,7 +19,7 @@ docker run -it --network kafka-cluster-network confluentinc/cp-kafka:5.0.1 kafka
 There are 2 environment variables need to be configured
 
 - `export KAFKA_SSL_SECRETS_DIR=$PWD/secrets`
-- `export KAFKA_SASL_SCRAM_SECRETS_DIR=$PWD/sasl-scram/secrets`  
+- `export KAFKA_SASL_SCRAM_SECRETS_DIR=$PWD/sasl-scram/secrets`
 
 
 ### SSL only
@@ -31,7 +31,7 @@ To start Kafka and Zookeeper cluster configured only with SSL, you could run the
 Configured both Zookeeper and Kafka to use SASL/SCRAM. To run it
 
 - Make sure you have the SSL keystore and truststore generated and stored in the directory
-`kafka-security-ssl-sasl/secrets`
+`kafka-security-ssl-sasl/secrets`, to generate truststore and keystore please run `secrets/create-certs.sh`
 - Run command `kafka-security-ssl-sasl/start_sasl_scram_cluster.sh`
 - To run console producer and consumer, you could check the commands in the file `kafka-security-ssl-sasl/sasl-scram/kafka-consumers-producers.sh`
 - To add any new account to connect to Kafka, you could find commands in the script file `sasl-scram/add_kafka_accounts_in_zookeeper.sh`

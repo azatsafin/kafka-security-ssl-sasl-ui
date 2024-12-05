@@ -2,7 +2,7 @@
 version: '3.5'
 services:
   zookeeper-add-kafka-users:
-    image: confluentinc/cp-kafka:5.0.1
+    image: confluentinc/cp-kafka:7.6.4
     container_name: "zookeeper-add-kafka-users"
     depends_on:
       - zookeeper-1
@@ -12,9 +12,9 @@ services:
                           cub zk-ready zookeeper-1:22181 120 && \
                           cub zk-ready zookeeper-2:32181 120 && \
                           cub zk-ready zookeeper-3:42181 120 && \
-                          kafka-configs --zookeeper zookeeper-1:22181 --alter --add-config 'SCRAM-SHA-256=[iterations=4096,password=password]' --entity-type users --entity-name metricsreporter && \
-                          kafka-configs --zookeeper zookeeper-1:22181 --alter --add-config 'SCRAM-SHA-256=[iterations=4096,password=password]' --entity-type users --entity-name kafkaclient && \
-                          kafka-configs --zookeeper zookeeper-1:22181 --alter --add-config 'SCRAM-SHA-256=[iterations=4096,password=password]' --entity-type users --entity-name kafkabroker '"
+                          kafka-configs --zookeeper zookeeper-1:22181 --alter --add-config 'SCRAM-SHA-512=[iterations=4096,password=password]' --entity-type users --entity-name metricsreporter && \
+                          kafka-configs --zookeeper zookeeper-1:22181 --alter --add-config 'SCRAM-SHA-512=[iterations=4096,password=password]' --entity-type users --entity-name kafkaclient && \
+                          kafka-configs --zookeeper zookeeper-1:22181 --alter --add-config 'SCRAM-SHA-512=[iterations=4096,password=password]' --entity-type users --entity-name kafkabroker '"
     environment:
       KAFKA_BROKER_ID: ignored
       KAFKA_ZOOKEEPER_CONNECT: ignored
@@ -24,7 +24,7 @@ services:
     volumes:
       - ${KAFKA_SASL_SCRAM_SECRETS_DIR}/zookeeper_client_jaas.conf:/etc/kafka/secrets/zookeeper_client_jaas.conf
   zookeeper-1:
-    image: confluentinc/cp-zookeeper:5.0.1
+    image: confluentinc/cp-zookeeper:7.6.4
     hostname: zookeeper-1
     container_name: zookeeper-1
     ports:
@@ -54,7 +54,7 @@ services:
       - ${KAFKA_SASL_SCRAM_SECRETS_DIR}/zookeeper_server_jaas.conf:/etc/kafka/secrets/zookeeper_server_jaas.conf
 
   zookeeper-2:
-    image: confluentinc/cp-zookeeper:5.0.1
+    image: confluentinc/cp-zookeeper:7.6.4
     hostname: zookeeper-2
     container_name: zookeeper-2
     ports:
@@ -85,7 +85,7 @@ services:
 
 
   zookeeper-3:
-    image: confluentinc/cp-zookeeper:5.0.1
+    image: confluentinc/cp-zookeeper:7.6.4
     hostname: zookeeper-3
     container_name: zookeeper-3
     ports:
@@ -115,7 +115,8 @@ services:
       - ${KAFKA_SASL_SCRAM_SECRETS_DIR}/zookeeper_server_jaas.conf:/etc/kafka/secrets/zookeeper_server_jaas.conf
 
   kafka-broker-1:
-    image: confluentinc/cp-kafka:5.0.1
+    platform: linux/arm64
+    image: confluentinc/cp-kafka:7.6.4
     hostname: kafka-broker-1
     container_name: kafka-broker-1
     ports:
@@ -141,12 +142,12 @@ services:
       KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
       KAFKA_SSL_CLIENT_AUTH: requested
       KAFKA_MIN_INSYNC_REPLICAS: ${KAFKA_MIN_INSYNC_REPLICAS}
-      KAFKA_SASL_ENABLED_MECHANISMS: SCRAM-SHA-256
+      KAFKA_SASL_ENABLED_MECHANISMS: SCRAM-SHA-512
       KAFKA_SECURITY_INTER_BROKER_PROTOCOL: SASL_SSL
-      KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: SCRAM-SHA-256
+      KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: SCRAM-SHA-512
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
       CONFLUENT_METRICS_REPORTER_SECURITY_PROTOCOL: SASL_SSL
-      CONFLUENT_METRICS_REPORTER_SASL_MECHANISM: SCRAM-SHA-256
+      CONFLUENT_METRICS_REPORTER_SASL_MECHANISM: SCRAM-SHA-512
       CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: ${CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS}
       KAFKA_OFFSETS_RETENTION_MINUTES: 172800
       KAFKA_LOG4J_LOGGERS: "kafka.authorizer.logger=INFO,kafka.controller=INFO"
@@ -154,7 +155,7 @@ services:
       KAFKA_SUPER_USERS: ${KAFKA_SUPER_USERS}
       KAFKA_ZOOKEEPER_SASL_ENABLED: "true"
       KAFKA_ZOOKEEPER_SET_ACL: "true"
-      KAFKA_AUTHORIZER_CLASS_NAME: kafka.security.auth.SimpleAclAuthorizer
+      KAFKA_AUTHORIZER_CLASS_NAME: kafka.security.authorizer.AclAuthorizer
       KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: "false"
       KAFKA_OPTS: -Dzookeeper.sasl.client=true
         -Dzookeeper.sasl.clientconfig=Client
@@ -167,7 +168,7 @@ services:
 
 
   kafka-broker-2:
-    image: confluentinc/cp-kafka:5.0.1
+    image: confluentinc/cp-kafka:7.6.4
     hostname: kafka-broker-2
     container_name: kafka-broker-2
     ports:
@@ -193,12 +194,12 @@ services:
       KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
       KAFKA_SSL_CLIENT_AUTH: requested
       KAFKA_MIN_INSYNC_REPLICAS: ${KAFKA_MIN_INSYNC_REPLICAS}
-      KAFKA_SASL_ENABLED_MECHANISMS: SCRAM-SHA-256
+      KAFKA_SASL_ENABLED_MECHANISMS: SCRAM-SHA-512
       KAFKA_SECURITY_INTER_BROKER_PROTOCOL: SASL_SSL
-      KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: SCRAM-SHA-256
+      KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: SCRAM-SHA-512
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
       CONFLUENT_METRICS_REPORTER_SECURITY_PROTOCOL: SASL_SSL
-      CONFLUENT_METRICS_REPORTER_SASL_MECHANISM: SCRAM-SHA-256
+      CONFLUENT_METRICS_REPORTER_SASL_MECHANISM: SCRAM-SHA-512
       CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: ${CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS}
       KAFKA_OFFSETS_RETENTION_MINUTES: 172800
       KAFKA_LOG4J_LOGGERS: "kafka.authorizer.logger=INFO,kafka.controller=INFO"
@@ -206,7 +207,7 @@ services:
       KAFKA_SUPER_USERS: ${KAFKA_SUPER_USERS}
       KAFKA_ZOOKEEPER_SASL_ENABLED: "true"
       KAFKA_ZOOKEEPER_SET_ACL: "true"
-      KAFKA_AUTHORIZER_CLASS_NAME: kafka.security.auth.SimpleAclAuthorizer
+      KAFKA_AUTHORIZER_CLASS_NAME: kafka.security.authorizer.AclAuthorizer
       KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: "false"
       KAFKA_OPTS: -Dzookeeper.sasl.client=true
         -Dzookeeper.sasl.clientconfig=Client
@@ -219,7 +220,7 @@ services:
 
 
   kafka-broker-3:
-    image: confluentinc/cp-kafka:5.0.1
+    image: confluentinc/cp-kafka:7.6.4
     hostname: kafka-broker-3
     container_name: kafka-broker-3
     ports:
@@ -245,12 +246,12 @@ services:
       KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
       KAFKA_SSL_CLIENT_AUTH: requested
       KAFKA_MIN_INSYNC_REPLICAS: ${KAFKA_MIN_INSYNC_REPLICAS}
-      KAFKA_SASL_ENABLED_MECHANISMS: SCRAM-SHA-256
+      KAFKA_SASL_ENABLED_MECHANISMS: SCRAM-SHA-512
       KAFKA_SECURITY_INTER_BROKER_PROTOCOL: SASL_SSL
-      KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: SCRAM-SHA-256
+      KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: SCRAM-SHA-512
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
       CONFLUENT_METRICS_REPORTER_SECURITY_PROTOCOL: SASL_SSL
-      CONFLUENT_METRICS_REPORTER_SASL_MECHANISM: SCRAM-SHA-256
+      CONFLUENT_METRICS_REPORTER_SASL_MECHANISM: SCRAM-SHA-512
       CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: ${CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS}
       KAFKA_OFFSETS_RETENTION_MINUTES: 172800
       KAFKA_LOG4J_LOGGERS: "kafka.authorizer.logger=INFO,kafka.controller=INFO"
@@ -258,7 +259,7 @@ services:
       KAFKA_SUPER_USERS: ${KAFKA_SUPER_USERS}
       KAFKA_ZOOKEEPER_SASL_ENABLED: "true"
       KAFKA_ZOOKEEPER_SET_ACL: "true"
-      KAFKA_AUTHORIZER_CLASS_NAME: kafka.security.auth.SimpleAclAuthorizer
+      KAFKA_AUTHORIZER_CLASS_NAME: kafka.security.authorizer.AclAuthorizer
       KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: "false"
       KAFKA_OPTS: -Dzookeeper.sasl.client=true
         -Dzookeeper.sasl.clientconfig=Client
@@ -266,6 +267,36 @@ services:
     volumes:
       - ${KAFKA_SSL_SECRETS_DIR}/broker-3:/etc/kafka/secrets
       - ${KAFKA_SASL_SCRAM_SECRETS_DIR}:/etc/kafka/secrets/conf
+    networks:
+      - kafka-cluster-network
+
+  kafbat-ui:
+    container_name: kafka-ui
+    image: ghcr.io/kafbat/kafka-ui:latest
+    ports:
+      - 8080:8080
+    depends_on:
+      - zookeeper-1
+      - zookeeper-2
+      - zookeeper-3
+      - kafka-broker-1
+      - kafka-broker-2
+      - kafka-broker-3
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka-broker-1:19094,kafka-broker-2:29094,kafka-broker-3:39094
+      KAFKA_CLUSTERS_0_PROPERTIES_SECURITY_PROTOCOL: SASL_SSL
+      KAFKA_CLUSTERS_0_PROPERTIES_SASL_MECHANISM: SCRAM-SHA-512
+      KAFKA_CLUSTERS_0_PROPERTIES_SASL_JAAS_CONFIG: 'org.apache.kafka.common.security.scram.ScramLoginModule required username="kafkaclient" password="password";'
+      # DYNAMIC_CONFIG_ENABLED: true # not necessary for sasl auth, added for tests
+      KAFKA_CLUSTERS_0_PROPERTIES_SSL_KEYSTORE_LOCATION: /kafka.keystore.jks
+      KAFKA_CLUSTERS_0_PROPERTIES_SSL_KEYSTORE_PASSWORD: confluent
+      KAFKA_CLUSTERS_0_SSL_TRUSTSTORELOCATION: /kafka.truststore.jks
+      KAFKA_CLUSTERS_0_SSL_TRUSTSTOREPASSWORD: confluent
+      KAFKA_CLUSTERS_0_PROPERTIES_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: '' # DISABLE COMMON NAME VERIFICATION
+    volumes:
+      - ${KAFKA_SSL_SECRETS_DIR}/producer/kafka.producer.truststore.jks:/kafka.truststore.jks
+      - ${KAFKA_SSL_SECRETS_DIR}/producer/kafka.producer.keystore.jks:/kafka.keystore.jks
     networks:
       - kafka-cluster-network
 
